@@ -2,15 +2,20 @@ package com.exeter.receiver;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.TextMessage;
 
-import org.apache.activemq.artemis.api.core.Message;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ArtemisReceiver {
 
+	@Autowired
+	JmsTemplate template;
+	
     @JmsListener(destination = "${jms.queue.name}")
     public void receiveMessage(Message message) {
         try {
@@ -49,6 +54,30 @@ public class ArtemisReceiver {
             System.out.println("Message Received: " + stringMessage);
         } catch (JMSException e) {
             System.out.println("Error receiving Message:");
+            e.printStackTrace();
+        }
+    }
+    @JmsListener(destination = "${jms.queue.name}", selector = "JMSType='text'")
+    public void receiveTextMessage(TextMessage message) { //his method will receive the TextMessage from the "Sender" service and check for a value on the getJMSReplyTo method
+        try {
+            System.out.println("Message Received: " + message.getText());
+            if (message.getJMSReplyTo() != null) {
+                template.convertAndSend(message.getJMSReplyTo(), "Message Acknowledged");
+            }
+        } catch (JMSException e) {
+            System.out.println("Error receiving Message:");
+            e.printStackTrace();
+        }
+    }
+    @JmsListener(destination = "topicTextMessages", containerFactory = "myFactory")
+    public void receiveTopicTextMessage(TextMessage message) {
+        try {
+            System.out.println("Topic Message Received: " + message.getText());
+            if (message.getJMSReplyTo() != null) {
+                template.convertAndSend(message.getJMSReplyTo(), "Message Acknowledged");
+            }
+        } catch (JMSException e) {
+            System.out.println("Error receiving Topic Message: ");
             e.printStackTrace();
         }
     }
