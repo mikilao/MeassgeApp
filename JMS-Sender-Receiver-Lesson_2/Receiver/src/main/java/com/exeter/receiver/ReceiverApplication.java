@@ -26,7 +26,7 @@ public class ReceiverApplication {
 	    converter.setTypeIdPropertyName("_type");
 	    return converter;
 	}
-	
+	//3. In order for this method to listen for a Topic rather than a Queue message, the myFactory container was created in the ReceiverApplication class and specified as the container factory in the JmsListener.
 	@Bean
 	public JmsListenerContainerFactory<?> myFactory(ConnectionFactory connectionFactory, DefaultJmsListenerContainerFactoryConfigurer configurer) {
 	    DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
@@ -35,6 +35,7 @@ public class ReceiverApplication {
 	    return factory;
 	}
 	
+	//istens to the ProductOrders Topic and converts JSON to Java objects.
 	@Bean
 	public JmsListenerContainerFactory<?> ProductOrdersFactory(ConnectionFactory connectionFactory, DefaultJmsListenerContainerFactoryConfigurer configurer) {
 	    DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();

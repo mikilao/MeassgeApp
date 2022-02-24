@@ -8,10 +8,13 @@ import javax.jms.TextMessage;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
+
+import com.exeter.pojos.ProductOrder;
 
 @Component
 public class ArtemisPublisher {
@@ -22,10 +25,17 @@ public class ArtemisPublisher {
 	@Value("${jms.queue.name}")
 	String queueName;
 	
-	@Value("${jms.replyqueue.name}")
+	@Value("${jms.replyqueue.name}") 
 	String replyQueueName; // property to contain that reply queue name.
 	
-	public void sendMessage(String message) { 
+	@Autowired
+	@Qualifier("jmsJSONTopicTemplate")
+	JmsTemplate JSONTopicTemplate;
+
+	public void broadcastProductOrder(ProductOrder order) {
+	    JSONTopicTemplate.convertAndSend("ProductOrders", order);
+	}
+	public void sendMessage(String message) {// 2. is using a regular Queue to send a TextMessage with the String value. There is also a JMSType header being set indicating what kind of message is being sent.
 	    template.send(queueName, s -> {
 	        Queue replyQueue = s.createQueue(replyQueueName); // Get the reply queue object
 	        TextMessage msg = s.createTextMessage(message);

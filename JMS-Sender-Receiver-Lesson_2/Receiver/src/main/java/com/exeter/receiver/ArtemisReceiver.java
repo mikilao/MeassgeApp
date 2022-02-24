@@ -10,6 +10,8 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
+import com.exeter.pojos.ProductOrder;
+
 @Component
 public class ArtemisReceiver {
 
@@ -80,5 +82,10 @@ public class ArtemisReceiver {
             System.out.println("Error receiving Topic Message: ");
             e.printStackTrace();
         }
+    }
+    //The last step is to create a listener
+    @JmsListener(destination = "ProductOrders", containerFactory = "ProductOrdersFactory")
+    public void listenProductOrder(ProductOrder productOrder) {
+        System.out.println("Name: " +  productOrder.getProductName() + " Quantity: " + productOrder.getQuantity() + " Price: " + productOrder.getPrice());
     }
 }
