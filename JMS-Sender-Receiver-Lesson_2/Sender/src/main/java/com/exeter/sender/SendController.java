@@ -11,7 +11,7 @@ public class SendController {
 	@Autowired
 	ArtemisPublisher pub;
 	
-	@GetMapping("/send/{message}")
+	@GetMapping("/send/{message}") //1. When a message is received by the API send endpoint in your Sender service
 	public String sendMessage(@PathVariable("message") String message) {
 		pub.sendMessage(message);
 		return "Message sent!";
